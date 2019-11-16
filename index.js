@@ -1,4 +1,5 @@
 const sendRequest = require("./src/request");
+const tokenConfig = require("./config");
 
 const path = require("path");
 const fs = require("fs");
@@ -37,10 +38,6 @@ class TelegramBot {
   }
 }
 
-// class TelegramBot extends EventEmitter{
-
-// }
-
-let bot = new TelegramBot("1061648762:AAED3X814nZeCizj1545QONZmARIDAp4eQQ");
+let bot = new TelegramBot(tokenConfig.token);
 
 module.exports = TelegramBot;
