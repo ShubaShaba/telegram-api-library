@@ -40,6 +40,12 @@ class TelegramBot extends EventEmitter {
   setPolling() {
     startPolling(this.token, { timeout: 100 }, msg => {
       this.emit("message", msg);
+
+      if (msg.text) {
+        this.emit("text", msg);
+      } else if (msg.photo) {
+        this.emit("photo", msg);
+      }
     });
   }
 }
@@ -48,8 +54,8 @@ class TelegramBot extends EventEmitter {
 
 // bot.setPolling();
 
-// bot.on("message", function() {
-//   console.log(arguments);
+// bot.on("message", function(msg) {
+//   console.log(msg);
 // });
 
 module.exports = TelegramBot;

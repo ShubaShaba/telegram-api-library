@@ -29,11 +29,19 @@ function requestForUpdates(token, updateMethods, callback) {
       let string = buffer.toString("utf8");
       let object = JSON.parse(string);
 
-      let offset = object.result[object.result.length - 1].update_id + 1;
+      let offset = object.result[object.result.length - 1];
+      let callBackMessage;
+
+      if (offset) {
+        callBackMessage = offset.message;
+        offset = offset.update_id + 1;
+      }
 
       let methods = { offset: offset, timeout: 100 };
 
-      callback(object.result[object.result.length - 1].message);
+      if (callBackMessage) {
+        callback(callBackMessage);
+      }
 
       requestForUpdates(token, methods, callback);
     });
