@@ -1,43 +1,55 @@
 const sendRequest = require("./src/request");
-const tokenConfig = require("./config");
+const startPolling = require("./src/polling");
+const tokenConfig = require("./config"); // const tokenConfig = require("./configExample");
 
 const path = require("path");
-const fs = require("fs");
 const EventEmitter = require("events");
 
-class TelegramBot {
+class TelegramBot extends EventEmitter {
   constructor(token) {
+    super();
     this.token = token;
+  }
+  sendMessage(chat_id, text) {
+    const reqOptions = { tgMethod: "sendMessage", method: "GET" };
 
-    this.sendMessage = function(chat_id, text) {
-      const reqOptions = { tgMethod: "sendMessage", method: "GET" };
+    const messageOptions = { chat_id: chat_id, text: text };
 
-      const messageOptions = { chat_id: chat_id, text: text };
+    const fileOptions = null;
+    sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+  }
 
-      const fileOptions = null;
-      sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+  sendPhoto(chat_id, pathToFile, caption) {
+    let filename = path.basename(pathToFile);
+
+    const reqOptions = { tgMethod: "sendPhoto", method: "POST" };
+    let messageOptions = { chat_id: chat_id };
+
+    if (caption) {
+      messageOptions.caption = caption;
+    }
+
+    const fileOptions = {
+      path: pathToFile,
+      type: "photo",
+      filename: filename
     };
+    sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+  }
 
-    this.sendPhoto = function(chat_id, pathToFile, caption) {
-      let filename = path.basename(pathToFile);
-
-      const reqOptions = { tgMethod: "sendPhoto", method: "POST" };
-      let messageOptions = { chat_id: chat_id };
-
-      if (caption) {
-        messageOptions.caption = caption;
-      }
-
-      const fileOptions = {
-        path: pathToFile,
-        type: "photo",
-        filename: filename
-      };
-      sendRequest(this.token, reqOptions, messageOptions, fileOptions);
-    };
+  setPolling() {
+    startPolling(this.token, { timeout: 100 }, msg => {
+      this.emit("message", msg);
+    });
   }
 }
 
-let bot = new TelegramBot(tokenConfig.token);
+// let bot = new TelegramBot(tokenConfig.token);
+
+// bot.setPolling();
+
+// bot.on("message", function() {
+//   console.log(arguments);
+// });
 
 module.exports = TelegramBot;
