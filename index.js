@@ -1,6 +1,7 @@
 const sendRequest = require("./src/request");
 const startPolling = require("./src/polling");
 const tokenConfig = require("./config"); // const tokenConfig = require("./configExample");
+const url = require("url");
 
 const path = require("path");
 const EventEmitter = require("events");
@@ -19,22 +20,35 @@ class TelegramBot extends EventEmitter {
     sendRequest(this.token, reqOptions, messageOptions, fileOptions);
   }
 
-  sendPhoto(chat_id, pathToFile, caption) {
-    let filename = path.basename(pathToFile);
+  sendDocument(chat_id, path, caption) {}
 
-    const reqOptions = { tgMethod: "sendPhoto", method: "POST" };
+  sendAudio(chat_id, path, caption) {}
+
+  sendPhoto(chat_id, pathToFile, caption) {
+    const URL = url.parse(pathToFile);
+
+    let reqOptions = { tgMethod: "sendPhoto", method: "POST" };
     let messageOptions = { chat_id: chat_id };
 
     if (caption) {
       messageOptions.caption = caption;
     }
 
-    const fileOptions = {
-      path: pathToFile,
-      type: "photo",
-      filename: filename
-    };
-    sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+    if (URL.protocol) {
+      reqOptions.method = "GET";
+      messageOptions.photo = pathToFile;
+
+      sendRequest(this.token, reqOptions, messageOptions);
+    } else {
+      let filename = path.basename(pathToFile);
+
+      const fileOptions = {
+        path: pathToFile,
+        type: "photo",
+        filename: filename
+      };
+      sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+    }
   }
 
   setPolling() {
