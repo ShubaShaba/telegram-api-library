@@ -1,6 +1,5 @@
 const sendRequest = require("./src/request");
 const startPolling = require("./src/polling");
-const tokenConfig = require("./config"); // const tokenConfig = require("./configExample");
 const url = require("url");
 
 const path = require("path");
@@ -47,7 +46,16 @@ class TelegramBot extends EventEmitter {
     sendRequest(this.token, reqOptions, messageOptions, fileOptions);
   }
 
-  // sendDocument(chat_id, pathToFile, caption) {}
+  sendDocument(chat_id, pathToFile, caption) {
+    sendData(
+      chat_id,
+      "sendDocument",
+      pathToFile,
+      this.token,
+      "document",
+      caption
+    );
+  }
 
   sendAudio(chat_id, pathToFile, caption) {
     sendData(chat_id, "sendAudio", pathToFile, this.token, "audio", caption);
@@ -69,13 +77,5 @@ class TelegramBot extends EventEmitter {
     });
   }
 }
-
-// let bot = new TelegramBot(tokenConfig.token);
-
-// bot.setPolling();
-
-// bot.on("message", function(msg) {
-//   console.log(msg);
-// });
 
 module.exports = TelegramBot;
