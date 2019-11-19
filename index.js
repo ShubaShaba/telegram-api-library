@@ -5,6 +5,36 @@ const url = require("url");
 const path = require("path");
 const EventEmitter = require("events");
 
+const messageTypes = [
+  "text",
+  "animation",
+  "audio",
+  "channel_chat_created",
+  "contact",
+  "delete_chat_photo",
+  "document",
+  "game",
+  "group_chat_created",
+  "invoice",
+  "left_chat_member",
+  "location",
+  "migrate_from_chat_id",
+  "migrate_to_chat_id",
+  "new_chat_members",
+  "new_chat_photo",
+  "new_chat_title",
+  "passport_data",
+  "photo",
+  "pinned_message",
+  "poll",
+  "sticker",
+  "successful_payment",
+  "supergroup_chat_created",
+  "video",
+  "video_note",
+  "voice"
+];
+
 function sendData(chat_id, tgMethodm, pathToFile, token, type, caption) {
   const URL = url.parse(pathToFile);
 
@@ -69,11 +99,11 @@ class TelegramBot extends EventEmitter {
     startPolling(this.token, { timeout: 100 }, msg => {
       this.emit("message", msg);
 
-      if (msg.text) {
-        this.emit("text", msg);
-      } else if (msg.photo) {
-        this.emit("photo", msg);
-      }
+      messageTypes.find(type => {
+        if (msg[type]) {
+          this.emit(type, msg);
+        }
+      });
     });
   }
 }
