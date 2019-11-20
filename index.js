@@ -35,7 +35,15 @@ const messageTypes = [
   "voice"
 ];
 
-function sendData(chat_id, tgMethodm, pathToFile, token, type, caption) {
+function sendData(
+  chat_id,
+  tgMethodm,
+  pathToFile,
+  token,
+  type,
+  caption,
+  callback
+) {
   const URL = url.parse(pathToFile);
 
   let reqOptions = { tgMethod: tgMethodm, method: "POST" };
@@ -49,7 +57,7 @@ function sendData(chat_id, tgMethodm, pathToFile, token, type, caption) {
     reqOptions.method = "GET";
     messageOptions.photo = pathToFile;
 
-    sendRequest(token, reqOptions, messageOptions);
+    sendRequest(token, reqOptions, messageOptions, null, callback);
   } else {
     let filename = path.basename(pathToFile);
 
@@ -58,7 +66,7 @@ function sendData(chat_id, tgMethodm, pathToFile, token, type, caption) {
       type: type,
       filename: filename
     };
-    sendRequest(token, reqOptions, messageOptions, fileOptions);
+    sendRequest(token, reqOptions, messageOptions, fileOptions, callback);
   }
 }
 
@@ -67,42 +75,61 @@ class TelegramBot extends EventEmitter {
     super();
     this.token = token;
   }
-  sendMessage(chat_id, text) {
+  sendMessage(chat_id, text, callback) {
     const reqOptions = { tgMethod: "sendMessage", method: "GET" };
 
     const messageOptions = { chat_id: chat_id, text: text };
 
     const fileOptions = null;
-    sendRequest(this.token, reqOptions, messageOptions, fileOptions);
+    sendRequest(this.token, reqOptions, messageOptions, fileOptions, callback);
   }
 
-  sendDocument(chat_id, pathToFile, caption) {
+  sendDocument(chat_id, pathToFile, caption, callback) {
     sendData(
       chat_id,
       "sendDocument",
       pathToFile,
       this.token,
       "document",
-      caption
+      caption,
+      callback
     );
   }
 
-  sendAudio(chat_id, pathToFile, caption) {
-    sendData(chat_id, "sendAudio", pathToFile, this.token, "audio", caption);
+  sendAudio(chat_id, pathToFile, caption, callback) {
+    sendData(
+      chat_id,
+      "sendAudio",
+      pathToFile,
+      this.token,
+      "audio",
+      caption,
+      callback
+    );
   }
 
-  sendPhoto(chat_id, pathToFile, caption) {
-    sendData(chat_id, "sendPhoto", pathToFile, this.token, "photo", caption);
+  sendPhoto(chat_id, pathToFile, caption, callback) {
+    sendData(
+      chat_id,
+      "sendPhoto",
+      pathToFile,
+      this.token,
+      "photo",
+      caption,
+      callback
+    );
   }
 
-  setPolling() {
+  setPolling(callback) {
     startPolling(this.token, { timeout: 100 }, msg => {
       this.emit("message", msg);
 
-      this.emit(
-        messageTypes.find(type => msg[type]),
-        msg
-      );
+      const dataType = messageTypes.find(type => msg[type]);
+      this.emit(dataType, msg);
+
+      if (callback) {
+        callback(dataType, msg);
+      }
     });
   }
 }

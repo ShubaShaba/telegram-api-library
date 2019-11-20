@@ -11,7 +11,13 @@ function createBoundaryData(boundary, parameter, value) {
   return data;
 }
 
-function requestToTelegram(token, reqOptions, messageOption, fileOption) {
+function requestToTelegram(
+  token,
+  reqOptions,
+  messageOption,
+  fileOption,
+  callback
+) {
   const boundary = "--------------------------743265011915282242444548";
   let data = "";
   let buffer;
@@ -67,7 +73,10 @@ function requestToTelegram(token, reqOptions, messageOption, fileOption) {
 
     res.on("end", () => {
       buffer = Buffer.concat(buffer);
-      console.log(buffer.toString("utf8"));
+      let string = buffer.toString("utf8");
+      if (callback) {
+        callback(JSON.parse(string));
+      }
     });
   });
 
