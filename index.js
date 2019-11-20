@@ -99,11 +99,10 @@ class TelegramBot extends EventEmitter {
     startPolling(this.token, { timeout: 100 }, msg => {
       this.emit("message", msg);
 
-      messageTypes.find(type => {
-        if (msg[type]) {
-          this.emit(type, msg);
-        }
-      });
+      this.emit(
+        messageTypes.find(type => msg[type]),
+        msg
+      );
     });
   }
 }
