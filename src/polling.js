@@ -47,6 +47,10 @@ function requestForUpdates(token, updateMethods, callback) {
     });
   });
 
+  req.on("error", e => {
+    console.error(`problem with polling: ${e.message}`);
+  });
+
   req.end();
 }
 

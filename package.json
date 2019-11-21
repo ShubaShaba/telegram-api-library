@@ -1,6 +1,6 @@
 {
-  "name": "telegram-api-library",
-  "version": "1.0.0",
+  "name": "telegram-bot-api-library",
+  "version": "1.2.7",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,10 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/ShubaShaba/telegram-api-library.git"
   },
-  "author": "",
+  "author": "ShubaShaba",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ShubaShaba/telegram-api-library/issues"
+    "url": "https://github.com/ShubaShaba/telegram-api-library"
   },
   "homepage": "https://github.com/ShubaShaba/telegram-api-library#readme"
 }
